@@ -1,6 +1,6 @@
 from openpyxl import load_workbook
 
-wb = load_workbook('featuresv1.xlsx')
+wb = load_workbook('features cleaned.xlsx')
 ws = wb['Sheet1']
 
 with open('snr_values.txt') as f:
@@ -13,26 +13,37 @@ snr = snr.split(',')
 
 hnr = hnr.split(',')
 
-counter = 1
-
-for item in snr:
-	index = 'CN' + str(counter) 
-	ws[index] = 'snr_values'
-
-	index2 = 'CN' + str(counter + 1)
-	ws[index2] = item
+ws['CL1'] = 'snr_values'
+ws['CM1'] = 'hnr_values'
+for idx, item in enumerate(snr):
 	
-	counter += 3
+	index = 'CL' + str(idx + 2)
+	ws[index] = item
 
-counter = 1
+for idx, item in enumerate(hnr):
 
-for item in hnr:
-	index = 'CO' + str(counter)
-	ws[index] = 'hnr_values'
+	index = 'CM' + str(idx + 2)
+	ws[index] = item
 
-	index2 = 'CO' + str(counter + 1)
-	ws[index2] = item
+diagnosis = 0
+ws['CN1'] = 'Diagnosis'
 
-	counter += 3
+for i in range(1, 209):
+	if i < 10:
+		with open('./physionet.org/files/voiced/1.0.0/voice00' + str(i) + '-info.txt') as f:
+			lines = f.readlines()
+	elif i < 100:
+		with open('./physionet.org/files/voiced/1.0.0/voice0' + str(i) + '-info.txt') as f:
+			lines = f.readlines()
+	else:
+		with open('./physionet.org/files/voiced/1.0.0/voice' + str(i) + '-info.txt') as f:
+			lines = f.readlines()
 
-wb.save('featuresv1.xlsx')
+	line = lines[4]
+	line = line.split()
+	diagnosis = ' '.join(line[1:])
+
+	index = 'CN' + str(i + 1)
+	ws[index] = diagnosis
+
+wb.save('features cleaned.xlsx')
